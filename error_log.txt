@@ -1,0 +1,30 @@
+﻿.venv\Scripts\python.exe : 
+D:\Hospital Flow 
+OpenEnv\dashboard.py:58: 
+UserWarning: The 
+parameters have been moved 
+from the Blocks 
+constructor to the 
+launch() method in Gradio 
+6.0: theme. Please pass 
+these parameters to 
+launch() instead.
+At line:1 char:1
++ .venv\Scripts\python.exe 
+-c "import dashboard" 2>&1 
+| Out-File -FileP ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (D:\  
+  Hospital Flo...unch()    
+ instead.:String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+  with 
+gr.Blocks(title="Hospital 
+ER Triage Simulator", 
+theme=custom_theme) as 
+demo:

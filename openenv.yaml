@@ -1,0 +1,29 @@
+name: hospital_er_triage
+version: "1.0.0"
+description: >
+  Hospital ER Triage Simulator — An OpenEnv environment that simulates
+  an Emergency Room triage workflow. An RL agent receives incoming patient
+  presentations (symptoms, vitals, chief complaint) and must assign an
+  Emergency Severity Index (ESI) level (1-5), decide resource allocation,
+  and manage patient flow under time pressure.
+
+author: "Hospital Flow OpenEnv Contributors"
+license: "BSD-3-Clause"
+
+tags:
+  - healthcare
+  - simulation
+  - triage
+  - reinforcement-learning
+
+# Infrastructure requirements for deployment
+infrastructure:
+  hardware_tier: "cpu-basic"       # No GPU needed for this simulation
+  memory: "512Mi"
+  timeout_seconds: 300
+
+# Server configuration
+server:
+  entrypoint: "server.app:app"
+  port: 8000
+  dockerfile: "server/Dockerfile"

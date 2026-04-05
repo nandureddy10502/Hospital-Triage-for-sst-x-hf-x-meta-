@@ -1,0 +1,44 @@
+﻿Help on function mount_gradio_app in module gradio.routes:
+
+mount_gradio_app(app: 'fastapi.FastAPI', blocks: 'gradio.Blocks', path: 'str', server_name: 'str' = '0.0.0.0', server_port: 'int' = 7860, footer_links: "list[Literal['api', 'gradio', 'settings'] | dict[str, str]] | None" = None, app_kwargs: 'dict[str, Any] | None' = None, *, auth: 'Callable | tuple[str, str] | list[tuple[str, str]] | None' = None, auth_message: 'str | None' = None, auth_dependency: 'Callable[[fastapi.Request], str | None] | None' = None, root_path: 'str | None' = None, allowed_paths: 'list[str] | None' = None, blocked_paths: 'list[str] | None' = None, favicon_path: 'str | None' = None, show_error: 'bool' = True, max_file_size: 'str | int | None' = None, ssr_mode: 'bool | None' = None, node_server_name: 'str | None' = None, node_port: 'int | None' = None, enable_monitoring: 'bool | None' = None, pwa: 'bool | None' = None, i18n: 'I18n | None' = None, mcp_server: 'bool | None' = None, theme: 'Theme | str | None' = None, css: 'str | None' = None, css_paths: 'str | Path | Sequence[str | Path] | None' = None, js: 'str | Literal[True] | None' = None, head: 'str | None' = None, head_paths: 'str | Path | Sequence[str | Path] | None' = None) -> 'fastapi.FastAPI'
+    Mount a gradio.Blocks to an existing FastAPI application.
+
+    Parameters:
+        app: The parent FastAPI application.
+        blocks: The blocks object we want to mount to the parent app.
+        path: The path at which the gradio application will be mounted, e.g. "/gradio".
+        server_name: The server name on which the Gradio app will be run.
+        server_port: The port on which the Gradio app will be run.
+        app_kwargs: Additional keyword arguments to pass to the underlying FastAPI app as a dictionary of parameter keys and argument values. For example, `{"docs_url": "/docs"}`
+        auth: If provided, username and password (or list of username-password tuples) required to access the gradio app. Can also provide function that takes username and password and returns True if valid login.
+        auth_message: If provided, HTML message provided on login page for this gradio app.
+        auth_dependency: A function that takes a FastAPI request and returns a string user ID or None. If the function returns None for a specific request, that user is not authorized to access the gradio app (they will see a 401 Unauthorized response). To be used with external authentication systems like OAuth. Cannot be used with `auth`.
+        root_path: The subpath corresponding to the public deployment of this FastAPI application. For example, if the application is served at "https://example.com/myapp", the `root_path` should be set to "/myapp". A full URL beginning with http:// or https:// can be provided, which will be used in its entirety. Normally, this does not need to provided (even if you are using a custom `path`). However, if you are serving the FastAPI app behind a proxy, the proxy may not provide the full path to the Gradio app in the request headers. In which case, you can provide the root path here.
+        allowed_paths: List of complete filepaths or parent directories that this gradio app is allowed to serve. Must be absolute paths. Warning: if you provide directories, any files in these directories or their subdirectories are accessible to all users of your app.
+        blocked_paths: List of complete filepaths or parent directories that this gradio app is not allowed to serve (i.e. users of your app are not allowed to access). Must be absolute paths. Warning: takes precedence over `allowed_paths` and all other directories exposed by Gradio by default.
+        favicon_path: If a path to a file (.png, .gif, or .ico) is provided, it will be used as the favicon for this gradio app's page.
+        show_error: If True, any errors in the gradio app will be displayed in an alert modal and printed in the browser console log. Otherwise, errors will only be visible in the terminal session running the Gradio app.
+        max_file_size: The maximum file size in bytes that can be uploaded. Can be a string of the form "<value><unit>", where value is any positive integer and unit is one of "b", "kb", "mb", "gb", "tb". If None, no limit is set.
+        footer_links: The links to display in the footer of the app. Accepts a list, where each element of the list must be one of "api", "gradio", or "settings" corresponding to the API docs, "built with Gradio", and settings pages respectively. If None, all three links will be shown in the footer. An empty list means that no footer is shown.
+        ssr_mode: If True, the Gradio app will be rendered using server-side rendering mode, which is typically more performant and provides better SEO, but this requires Node 20+ to be installed on the system. If False, the app will be rendered using client-side rendering mode. If None, will use GRADIO_SSR_MODE environment variable or default to False.
+        node_server_name: The name of the Node server to use for SSR. If None, will use GRADIO_NODE_SERVER_NAME environment variable or search for a node binary in the system.
+        i18n: If provided, the i18n instance to use for this gradio app.
+        node_port: The port on which the Node server should run. If None, will use GRADIO_NODE_SERVER_PORT environment variable or find a free port.
+        mcp_server: If True, the MCP server will be launched on the gradio app. If None, will use GRADIO_MCP_SERVER environment variable or default to False.
+        theme: A Theme object or a string representing a theme. If a string, will look for a built-in theme with that name (e.g. "soft" or "default"), or will attempt to load a theme from the Hugging Face Hub (e.g. "gradio/monochrome"). If None, will use the Default theme.
+        css: Custom css as a code string. This css will be included in the demo webpage.
+        css_paths: Custom css as a pathlib.Path to a css file or a list of such paths. This css files will be read, concatenated, and included in the demo webpage. If the `css` parameter is also set, the css from `css` will be included first.
+        js: Custom js as a code string. The custom js should be in the form of a single js function. This function will automatically be executed when the page loads. For more flexibility, use the head parameter to insert js inside <script> tags.
+        head: Custom html code to insert into the head of the demo webpage. This can be used to add custom meta tags, multiple scripts, stylesheets, etc. to the page.
+        head_paths: Custom html code as a pathlib.Path to a html file or a list of such paths. This html files will be read, concatenated, and included in the head of the demo webpage. If the `head` parameter is also set, the html from `head` will be included first.
+    Example:
+        from fastapi import FastAPI
+        import gradio as gr
+        app = FastAPI()
+        @app.get("/")
+        def read_main():
+            return {"message": "This is your main app"}
+        io = gr.Interface(lambda x: "Hello, " + x + "!", "textbox", "textbox")
+        app = gr.mount_gradio_app(app, io, path="/gradio")
+        # Then run `uvicorn run:app` from the terminal and navigate to http://localhost:8000/gradio.
+

@@ -1,0 +1,10 @@
+﻿136: '        if not waiting:\n'
+137: '            no_msg = "No waiting patients. Try Diagnose to free a bed first."\n'
+138: '            state  = _env.state\n'
+139: '            raw    = [p.model_dump() for p in _env.state.__class__.__fields__] if False else current_q\n'
+140: '            return (format_queue([_to_patient(p) for p in current_q]),\n'
+141: '                    "--", round(state.total_reward, 2), no_msg,\n'
+142: '                    "<div style=\'color:gray;font-size:22px;font-weight:bold\'>Grade: In Progressà</div>",\n'
+143: '                    current_q)\n'
+144: '\n'
+

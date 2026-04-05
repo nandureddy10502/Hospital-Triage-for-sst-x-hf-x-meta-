@@ -1,0 +1,11 @@
+﻿Help on function __init__ in module gradio.blocks:
+
+__init__(self, analytics_enabled: 'bool | None' = None, mode: 'str' = 'blocks', title: 'str | I18nData' = 'Gradio', fill_height: 'bool' = False, fill_width: 'bool' = False, delete_cache: 'tuple[int, int] | None' = None, **kwargs)
+    Parameters:
+        analytics_enabled: Whether to allow basic telemetry. If None, will use GRADIO_ANALYTICS_ENABLED environment variable or default to True.
+        mode: A human-friendly name for the kind of Blocks or Interface being created. Used internally for analytics.
+        title: The tab title to display when this is opened in a browser window.
+        fill_height: Whether to vertically expand top-level child components to the height of the window. If True, expansion occurs when the scale value of the child components >= 1.
+        fill_width: Whether to horizontally expand to fill container fully. If False, centers and constrains app to a maximum width. Only applies if this is the outermost `Blocks` in your Gradio app.
+        delete_cache: A tuple corresponding [frequency, age] both expressed in number of seconds. Every `frequency` seconds, the temporary files created by this Blocks instance will be deleted if more than `age` seconds have passed since the file was created. For example, setting this to (86400, 86400) will delete temporary files every day. The cache will be deleted entirely when the server restarts. If None, no cache deletion will occur.
+
