@@ -13,6 +13,7 @@ from client import HospitalERTriageEnv
 from models import HospitalAction, PatientPresentation
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:7860")
+API_KEY = os.getenv("API_KEY", "dummy-token")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 HF_TOKEN = os.getenv("HF_TOKEN")
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
@@ -20,7 +21,7 @@ LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 # Configured OpenAI client for any LLM calls
 client = OpenAI(
     base_url=API_BASE_URL,
-    api_key=HF_TOKEN or "dummy-token"
+    api_key=API_KEY
 )
 
 # Target: remote HF Space or local server
@@ -130,6 +131,16 @@ async def run_task(task_name: str, queue_size: int, total_beds: int):
 
 
 async def main():
+    print("Making initial API call to register proxy usage...")
+    try:
+        client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[{"role": "user", "content": "Hello proxy!"}],
+            max_tokens=5
+        )
+    except Exception as e:
+        print(f"Initial proxy call error (ignored): {e}")
+
     tasks = [
         ("Easy",   5,  10),
         ("Medium", 15, 20),
