@@ -298,9 +298,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             self._done = True
             messages.append(f"Shift complete! {self._patients_triaged} patients discharged.")
 
-        if step_reward == 0:
-            step_reward = 0.05
-        step_reward = float(max(0.05, min(0.95, step_reward)))
+        step_reward = max(0.05, min(0.95, float(step_reward) if step_reward in [0, 1] else step_reward / 100.0 if abs(step_reward) > 1 else step_reward))
 
         return TriageObservation(
             waiting_room=[r.presentation for r in self._waiting_room],
@@ -330,7 +328,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             step_count=self._step_count,
             patients_triaged=self._patients_triaged,
             patients_remaining=len(self._waiting_room),
-            total_reward=bounded_score,
+            total_reward=float(max(0.1, min(0.9, bounded_score))),
             is_done=self._done,
             critical_patients_total=self._critical_patients_total,
             critical_patients_saved_in_time=self._critical_patients_saved_in_time,
