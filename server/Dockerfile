@@ -1,4 +1,4 @@
-FROM python:3.10-slim AS base
+FROM public.ecr.aws/docker/library/python:3.10-slim AS base
 
 # Prevent Python from buffering stdout/stderr (useful for container logs)
 ENV PYTHONUNBUFFERED=1
@@ -13,6 +13,8 @@ RUN pip install --no-cache-dir -r /app/server/requirements.txt
 COPY models.py      /app/models.py
 COPY __init__.py    /app/__init__.py
 COPY client.py      /app/client.py
+COPY grader.py      /app/grader.py
+COPY dashboard.py   /app/dashboard.py
 COPY server/        /app/server/
 
 EXPOSE 7860
