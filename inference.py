@@ -51,54 +51,82 @@ def _calc_esi(p: PatientPresentation) -> int:
 
 async def run_task(task_name: str, queue_size: int, total_beds: int):
     print(f"[START] Task: {task_name}")
-    async with HospitalERTriageEnv(base_url=env_server_url) as env:
-        result = await env.reset(
-            episode_id=task_name,
-            queue_size=queue_size,
-            bed_count=total_beds,
-        )
-
-        while not result.done:
-            obs = result.observation
-            patients = [_to_patient(p) for p in obs.waiting_room]
-
-            # Priority 1: discharge in-bed patients to free beds
-            in_bed = [p for p in patients if p.status == "in_bed"]
-            waiting = [p for p in patients if p.status == "waiting"]
-
-            if in_bed:
-                target = in_bed[0]
-                action = HospitalAction(
-                    action_type="diagnostic",
-                    assigned_patient_id=target.patient_id,
-                    test_type="labs",
+    
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            async with HospitalERTriageEnv(base_url=env_server_url) as env:
+                result = await env.reset(
+                    episode_id=task_name,
+                    queue_size=queue_size,
+                    bed_count=total_beds,
                 )
-                print(f"[STEP] Diagnose/discharge patient {target.patient_id}")
-            elif waiting:
-                # Triage the most critical waiting patient
-                target = min(waiting, key=_calc_esi)
-                esi = _calc_esi(target)
-                action = HospitalAction(
-                    action_type="triage",
-                    assigned_patient_id=target.patient_id,
-                    assigned_doctor_id="Dr. Heuristic",
-                    esi_level=esi,
-                    allocate_bed=True,
-                    notes="Heuristic vitals-based triage.",
-                )
-                print(f"[STEP] Triage patient {target.patient_id} (ESI {esi})")
+
+                while not result.done:
+                    obs = result.observation
+                    try:
+                        patients = [_to_patient(p) for p in obs.waiting_room]
+                    except Exception as e:
+                        print(f"[STEP] Error parsing observation: {e}")
+                        break
+
+                    # Priority 1: discharge in-bed patients to free beds
+                    in_bed = [p for p in patients if p.status == "in_bed"]
+                    waiting = [p for p in patients if p.status == "waiting"]
+
+                    if in_bed:
+                        target = in_bed[0]
+                        action = HospitalAction(
+                            action_type="diagnostic",
+                            assigned_patient_id=target.patient_id,
+                            test_type="labs",
+                        )
+                        print(f"[STEP] Diagnose/discharge patient {target.patient_id}")
+                    elif waiting:
+                        # Triage the most critical waiting patient
+                        target = min(waiting, key=_calc_esi)
+                        esi = _calc_esi(target)
+                        action = HospitalAction(
+                            action_type="triage",
+                            assigned_patient_id=target.patient_id,
+                            assigned_doctor_id="Dr. Heuristic",
+                            esi_level=esi,
+                            allocate_bed=True,
+                            notes="Heuristic vitals-based triage.",
+                        )
+                        print(f"[STEP] Triage patient {target.patient_id} (ESI {esi})")
+                    else:
+                        # No actionable patients (all expired or none left)
+                        break
+
+                    try:
+                        result = await env.step(action)
+                    except Exception as e:
+                        print(f"[STEP] Error during env.step: {e}")
+                        break
+                        
+                    await asyncio.sleep(0.1)  # small delay so logs are human-readable
+
+                try:
+                    state = await env.state()
+                    total_critical = state.get("critical_patients_total", 0)
+                    saved = state.get("critical_patients_saved_in_time", 0)
+                    success = (total_critical == 0) or (saved == total_critical)
+                    print(f"[END] Task: {task_name} | Score: {state.get('total_reward', 0.0)} | Success: {str(success).lower()}\n")
+                except Exception as e:
+                    print(f"[END] Task: {task_name} | Score: 0.0 | Success: false\n")
+                    print(f"Error getting final state: {e}")
+                    
+            # Successfully completed the task, break out of retry loop
+            return 
+            
+        except Exception as e:
+            print(f"[WARNING] Attempt {attempt+1}/{max_retries} failed for task {task_name}: {type(e).__name__} - {e}")
+            if attempt < max_retries - 1:
+                print(f"Retrying in 5 seconds...")
+                await asyncio.sleep(5)
             else:
-                # No actionable patients (all expired or none left)
-                break
-
-            result = await env.step(action)
-            await asyncio.sleep(0.1)  # small delay so logs are human-readable
-
-        state = await env.state()
-        total_critical = state.get("critical_patients_total", 0)
-        saved = state.get("critical_patients_saved_in_time", 0)
-        success = (total_critical == 0) or (saved == total_critical)
-        print(f"[END] Task: {task_name} | Score: {state.get('total_reward', 0.0)} | Success: {str(success).lower()}\n")
+                print(f"[END] Task: {task_name} | Score: 0.0 | Success: false | Error: all retries failed\n")
 
 
 async def main():
