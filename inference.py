@@ -11,6 +11,7 @@ from openai import OpenAI
 
 from client import HospitalERTriageEnv
 from models import HospitalAction, PatientPresentation
+from grader import grade_episode
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:7860")
 API_KEY = os.getenv("API_KEY", "dummy-token")
@@ -113,9 +114,10 @@ async def run_task(task_name: str, queue_size: int, total_beds: int):
                     total_critical = state.get("critical_patients_total", 0)
                     saved = state.get("critical_patients_saved_in_time", 0)
                     success = (total_critical == 0) or (saved == total_critical)
-                    print(f"[END] Task: {task_name} | Score: {state.get('total_reward', 0.0)} | Success: {str(success).lower()}\n")
+                    score = grade_episode(state)
+                    print(f"[END] Task: {task_name} | Score: {score} | Success: {str(success).lower()}\n")
                 except Exception as e:
-                    print(f"[END] Task: {task_name} | Score: 0.0 | Success: false\n")
+                    print(f"[END] Task: {task_name} | Score: 0.001 | Success: false\n")
                     print(f"Error getting final state: {e}")
                     
             # Successfully completed the task, break out of retry loop
@@ -127,7 +129,7 @@ async def run_task(task_name: str, queue_size: int, total_beds: int):
                 print(f"Retrying in 5 seconds...")
                 await asyncio.sleep(5)
             else:
-                print(f"[END] Task: {task_name} | Score: 0.0 | Success: false | Error: all retries failed\n")
+                print(f"[END] Task: {task_name} | Score: 0.001 | Success: false | Error: all retries failed\n")
 
 
 async def main():
