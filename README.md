@@ -1,3 +1,12 @@
+---
+title: Hospital Triage Final
+emoji: 🏥
+colorFrom: red
+colorTo: blue
+sdk: docker
+pinned: false
+---
+
 # Hospital ER Triage Simulator — OpenEnv Environment
 
 An [OpenEnv](https://github.com/meta-pytorch/OpenEnv) environment that simulates
