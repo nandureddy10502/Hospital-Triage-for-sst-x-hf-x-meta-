@@ -163,7 +163,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             elapsed_seconds=0.0,
             message="New shift started. Use 'triage' to assign beds, then 'diagnostic' to discharge.",
             done=False,
-            reward=0.0,
+            reward=0.05,
         )
 
     def step(
@@ -180,7 +180,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
                 beds_total=self._total_beds,
                 message="Shift over. Reset to start a new episode.",
                 done=True,
-                reward=0.0,
+                reward=0.05,
             )
 
         self._step_count += 1
@@ -297,6 +297,10 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
         if is_done:
             self._done = True
             messages.append(f"Shift complete! {self._patients_triaged} patients discharged.")
+
+        if step_reward == 0:
+            step_reward = 0.05
+        step_reward = float(max(0.05, min(0.95, step_reward)))
 
         return TriageObservation(
             waiting_room=[r.presentation for r in self._waiting_room],
