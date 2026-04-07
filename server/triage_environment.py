@@ -311,12 +311,22 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
 
     @property
     def state(self) -> TriageState:
+        import sys
+        import os
+        sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+        from grader import grade_episode
+        st_dict = {
+            "critical_patients_total": self._critical_patients_total,
+            "critical_patients_saved_in_time": self._critical_patients_saved_in_time,
+        }
+        bounded_score = grade_episode(st_dict)
+        
         return TriageState(
             episode_id=self._episode_id or "none",
             step_count=self._step_count,
             patients_triaged=self._patients_triaged,
             patients_remaining=len(self._waiting_room),
-            total_reward=round(self._total_reward, 2),
+            total_reward=bounded_score,
             is_done=self._done,
             critical_patients_total=self._critical_patients_total,
             critical_patients_saved_in_time=self._critical_patients_saved_in_time,

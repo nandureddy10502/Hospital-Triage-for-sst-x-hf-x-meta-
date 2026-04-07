@@ -1,0 +1,83 @@
+﻿Starting Inference Simulation via Heuristic Logic targeting http://localhost:7860...
+
+[START] Task: Easy
+[STEP] Assigned doctor Dr. Heuristic to patient 3ef167f7 (Calculated ESI: 1)
+.venv\Scripts\python : 
+Traceback (most recent 
+call last):
+At line:1 char:44
++ ... host:7860"; 
+.venv\Scripts\python 
+inference.py > 
+validation_error_trac ...
++                 ~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (Tra  
+  ceback (most recent ca   
+ ll last)::String) [],     
+RemoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+  File "D:\Hospital Flow 
+OpenEnv\inference.py", 
+line 90, in <module>
+    asyncio.run(main())
+  File "C:\Program Files\Wi
+ndowsApps\PythonSoftwareFou
+ndation.Python.3.12_3.12.28
+00.0_x64__qbz5n2kfra8p0\Lib
+\asyncio\runners.py", line 
+195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Wi
+ndowsApps\PythonSoftwareFou
+ndation.Python.3.12_3.12.28
+00.0_x64__qbz5n2kfra8p0\Lib
+\asyncio\runners.py", line 
+118, in run
+    return self._loop.run_u
+ntil_complete(task)
+           ^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Wi
+ndowsApps\PythonSoftwareFou
+ndation.Python.3.12_3.12.28
+00.0_x64__qbz5n2kfra8p0\Lib
+\asyncio\base_events.py", 
+line 691, in 
+run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "D:\Hospital Flow 
+OpenEnv\inference.py", 
+line 87, in main
+    await run_task(name, 
+q_size, beds)
+  File "D:\Hospital Flow 
+OpenEnv\inference.py", 
+line 64, in run_task
+    result = await 
+env.step(action)
+             
+^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Hospital Flow Op
+enEnv\.venv\Lib\site-packag
+es\openenv\core\env_client.
+py", line 407, in step
+    response = await self._
+send_and_receive(message)
+               ^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Hospital Flow Op
+enEnv\.venv\Lib\site-packag
+es\openenv\core\env_client.
+py", line 232, in 
+_send_and_receive
+    raise RuntimeError(
+RuntimeError: Server 
+error: Invalid message 
+(code: VALIDATION_ERROR)
