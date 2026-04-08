@@ -120,6 +120,8 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
         self._done: bool = True
         self._start_time: float = 0.0
 
+    def _meta_safe(self, v): return float(max(0.01, min(0.99, (v + 100) / 200)))
+
     def reset(
         self,
         seed: Optional[int] = None,
@@ -163,7 +165,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             elapsed_seconds=0.0,
             message="New shift started. Use 'triage' to assign beds, then 'diagnostic' to discharge.",
             done=False,
-            reward=0.05,
+            reward=self._meta_safe(0.0),
         )
 
     def step(
@@ -180,7 +182,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
                 beds_total=self._total_beds,
                 message="Shift over. Reset to start a new episode.",
                 done=True,
-                reward=0.05,
+                reward=self._meta_safe(0.0),
             )
 
         self._step_count += 1
@@ -298,8 +300,6 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             self._done = True
             messages.append(f"Shift complete! {self._patients_triaged} patients discharged.")
 
-        step_reward = max(0.05, min(0.95, float(step_reward) if step_reward in [0, 1] else step_reward / 100.0 if abs(step_reward) > 1 else step_reward))
-
         return TriageObservation(
             waiting_room=[r.presentation for r in self._waiting_room],
             waiting_room_count=len(self._waiting_room),
@@ -308,7 +308,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             elapsed_seconds=round(elapsed, 2),
             message=" | ".join(messages) if messages else "Step processed.",
             done=is_done,
-            reward=step_reward,
+            reward=self._meta_safe(step_reward),
         )
 
     @property
@@ -328,7 +328,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             step_count=self._step_count,
             patients_triaged=self._patients_triaged,
             patients_remaining=len(self._waiting_room),
-            total_reward=float(max(0.1, min(0.9, bounded_score))),
+            total_reward=self._meta_safe(bounded_score),
             is_done=self._done,
             critical_patients_total=self._critical_patients_total,
             critical_patients_saved_in_time=self._critical_patients_saved_in_time,

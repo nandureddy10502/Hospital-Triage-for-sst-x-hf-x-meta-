@@ -30,7 +30,7 @@ def grade_episode(state: Dict[str, Any]) -> float:
     else:
         raw_score = float(saved_in_time) / total_critical
         
-    return float(max(0.1, min(0.9, raw_score)))
+    return float(max(0.05, min(0.95, raw_score)))
 
 if __name__ == "__main__":
     import asyncio
