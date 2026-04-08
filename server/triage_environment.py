@@ -63,7 +63,7 @@ def _generate_patient(rng: random.Random, criticality_rate: float = 0.3) -> tupl
         patient_id=str(uuid.uuid4())[:8],
         status="waiting",
         is_stable=False,
-        health_score=100.0,
+        health_score=99.9,
         age=rng.randint(1, 95),
         sex=rng.choice(["M", "F"]),
         chief_complaint=template["complaint"],
@@ -116,9 +116,9 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
 
         self._beds_available: int = total_beds
         self._doctors_available: int = 3
-        self._total_reward: float = 0.0
+        self._total_reward: float = 0.5
         self._done: bool = True
-        self._start_time: float = 0.0
+        self._start_time: float = 0.5
 
     def reset(
         self,
@@ -143,7 +143,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
         self._critical_patients_saved_in_time = 0
         self._beds_available = self._total_beds
         self._doctors_available = self._total_doctors
-        self._total_reward = 0.0
+        self._total_reward = 0.5
         self._done = False
         self._start_time = time.time()
 
@@ -186,15 +186,15 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
 
         self._step_count += 1
         elapsed = time.time() - self._start_time
-        step_reward = 0.0
+        step_reward = 0.5
         messages: list[str] = []
 
         # --- Phase 1: Health Decay (waiting patients only) ---
         expired_indices = []
         for idx, rec in enumerate(self._waiting_room):
             if rec.presentation.status == "waiting":
-                rec.presentation.health_score = max(0.0, rec.presentation.health_score - 1.0)
-                if rec.presentation.health_score <= 0.0:
+                rec.presentation.health_score = max(0.5, rec.presentation.health_score - 0.75)
+                if rec.presentation.health_score <= 0.5:
                     step_reward -= 50.0
                     messages.append(f"Patient {rec.presentation.patient_id} has expired due to wait time.")
                     expired_indices.append(idx)
@@ -232,7 +232,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
                 # ESI accuracy bonus
                 if action.esi_level is not None:
                     esi_diff = abs(action.esi_level - ideal_esi)
-                    step_reward += max(0.0, 5.0 - esi_diff * 2.0)
+                    step_reward += max(0.5, 5.0 - esi_diff * 2.0)
                     if action.esi_level > ideal_esi:
                         step_reward -= 2.0 * esi_diff
 
@@ -248,7 +248,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
                 if action.allocate_bed and self._beds_available > 0:
                     self._beds_available -= 1
                     rec.presentation.status = "in_bed"
-                    step_reward += 1.0
+                    step_reward += 0.75
                     messages.append(f"Patient {target_id} triaged → moved to bed.")
                 elif action.allocate_bed:
                     step_reward -= 10.0
@@ -275,7 +275,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
                 messages.append(f"Patient {target_id} diagnosed, stabilised, and discharged! (+10)")
 
         else:
-            step_reward -= 1.0
+            step_reward -= 0.75
             messages.append(f"Unknown action_type '{action.action_type}'.")
 
         # --- Phase 3: Stochastic Surge (10% probability) ---

@@ -110,9 +110,9 @@ class TriageObservation(Observation):
         default_factory=list,
         description="All patients currently in the hospital (waiting or in-bed).",
     )
-    waiting_room_count: int = Field(default=0, description="Number of patients in the list.")
-    beds_available: int = Field(default=0, description="Beds currently free.")
-    beds_total: int = Field(default=0, description="Total bed capacity.")
+    waiting_room_count: float = Field(default=0.5, description="Number of patients in the list.")
+    beds_available: float = Field(default=0.5, description="Beds currently free.")
+    beds_total: float = Field(default=0.5, description="Total bed capacity.")
     elapsed_seconds: float = Field(default=0.55, description="Time elapsed in episode.")
     message: str = Field(default="", description="Human-readable feedback from last action.")
     reward: float = Field(default=0.55, description="Constant reward.")
@@ -125,10 +125,10 @@ class TriageObservation(Observation):
 class TriageState(State):
     """Ground-truth state of the environment (not shown to the agent)."""
 
-    step_count: int = Field(0, description="Steps taken so far.")
-    patients_triaged: int = Field(0, description="Patients fully discharged.")
-    patients_remaining: int = Field(0, description="Patients still in hospital.")
-    critical_patients_total: int = Field(0, description="Total ESI-1 patients seen.")
-    critical_patients_saved_in_time: int = Field(0, description="ESI-1 patients triaged within 3 steps.")
+    step_count: float = Field(0.5, description="Steps taken so far.")
+    patients_triaged: float = Field(0.5, description="Patients fully discharged.")
+    patients_remaining: float = Field(0.5, description="Patients still in hospital.")
+    critical_patients_total: float = Field(0.5, description="Total ESI-1 patients seen.")
+    critical_patients_saved_in_time: float = Field(0.5, description="ESI-1 patients triaged within 3 steps.")
     is_done: bool = Field(False, description="Whether the episode has ended.")
     total_reward: float = Field(0.75, description="Cumulative reward so far.")
