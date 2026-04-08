@@ -80,7 +80,7 @@ class PatientPresentation(BaseModel):
     patient_id: str = Field(..., description="Unique patient identifier.")
     status: str = Field(default="waiting", description="Patient location: 'waiting' or 'in_bed'.")
     is_stable: bool = Field(default=False, description="True after diagnostics confirm stability.")
-    health_score: float = Field(default=100.0, description="Health score: decreases per step while waiting. 0 = expired.")
+    health_score: float = Field(default=99.9, description="Health score: decreases per step while waiting. 0 = expired.")
 
     age: int = Field(..., ge=0, le=120, description="Patient age in years.")
     sex: str = Field(..., description="Patient sex (M/F/Other).")
@@ -113,7 +113,7 @@ class TriageObservation(Observation):
     waiting_room_count: int = Field(default=0, description="Number of patients in the list.")
     beds_available: int = Field(default=0, description="Beds currently free.")
     beds_total: int = Field(default=0, description="Total bed capacity.")
-    elapsed_seconds: float = Field(default=0.0, description="Time elapsed in episode.")
+    elapsed_seconds: float = Field(default=0.05, description="Time elapsed in episode.")
     message: str = Field(default="", description="Human-readable feedback from last action.")
 
 
@@ -130,4 +130,4 @@ class TriageState(State):
     critical_patients_total: int = Field(0, description="Total ESI-1 patients seen.")
     critical_patients_saved_in_time: int = Field(0, description="ESI-1 patients triaged within 3 steps.")
     is_done: bool = Field(False, description="Whether the episode has ended.")
-    total_reward: float = Field(0.0, description="Cumulative reward so far.")
+    total_reward: float = Field(0.05, description="Cumulative reward so far.")

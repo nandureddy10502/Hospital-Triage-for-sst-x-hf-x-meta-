@@ -160,10 +160,10 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             waiting_room_count=len(self._waiting_room),
             beds_available=self._beds_available,
             beds_total=self._total_beds,
-            elapsed_seconds=0.0,
+            elapsed_seconds=0.05,
             message="New shift started. Use 'triage' to assign beds, then 'diagnostic' to discharge.",
             done=False,
-            reward=float(max(0.05, min(0.95, 0.5))),
+            reward=0.55,
         )
 
     def step(
@@ -172,6 +172,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
         timeout_s: Optional[float] = None,
         **kwargs: Any,
     ) -> TriageObservation:
+        if action is None: return self.reset()
         if self._done:
             return TriageObservation(
                 waiting_room=[],
@@ -298,6 +299,8 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             self._done = True
             messages.append(f"Shift complete! {self._patients_triaged} patients discharged.")
 
+        final_step_reward = float(max(0.05, min(0.95, (step_reward + 100) / 200)))
+
         return TriageObservation(
             waiting_room=[r.presentation for r in self._waiting_room],
             waiting_room_count=len(self._waiting_room),
@@ -306,7 +309,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             elapsed_seconds=round(elapsed, 2),
             message=" | ".join(messages) if messages else "Step processed.",
             done=is_done,
-            reward=float(max(0.05, min(0.95, step_reward / 100.0 if abs(step_reward) > 1 else 0.5 if step_reward == 0 else step_reward))),
+            reward=final_step_reward,
         )
 
     @property
