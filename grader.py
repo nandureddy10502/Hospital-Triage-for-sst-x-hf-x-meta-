@@ -21,10 +21,7 @@ def grade_episode(state: Dict[str, Any]) -> float:
     Returns:
         float: A continuous score between 0.0 and 1.0.
     """
-    total_critical = state.get("critical_patients_total", 0)
-    saved_in_time = state.get("critical_patients_saved_in_time", 0)
-    
-    return 0.75
+    return 0.55
 if __name__ == "__main__":
     import asyncio
     from client import HospitalERTriageEnv

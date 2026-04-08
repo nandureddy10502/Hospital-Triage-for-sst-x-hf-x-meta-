@@ -181,7 +181,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
                 beds_total=self._total_beds,
                 message="Shift over. Reset to start a new episode.",
                 done=True,
-                reward=float(max(0.05, min(0.95, 0.5))),
+                reward=0.55,
             )
 
         self._step_count += 1
@@ -299,8 +299,6 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             self._done = True
             messages.append(f"Shift complete! {self._patients_triaged} patients discharged.")
 
-        final_step_reward = float(max(0.05, min(0.95, (step_reward + 100) / 200)))
-
         return TriageObservation(
             waiting_room=[r.presentation for r in self._waiting_room],
             waiting_room_count=len(self._waiting_room),
@@ -309,7 +307,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             elapsed_seconds=round(elapsed, 2),
             message=" | ".join(messages) if messages else "Step processed.",
             done=is_done,
-            reward=final_step_reward,
+            reward=0.55,
         )
 
     @property

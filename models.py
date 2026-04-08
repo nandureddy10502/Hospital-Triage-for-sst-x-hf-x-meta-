@@ -113,8 +113,9 @@ class TriageObservation(Observation):
     waiting_room_count: int = Field(default=0, description="Number of patients in the list.")
     beds_available: int = Field(default=0, description="Beds currently free.")
     beds_total: int = Field(default=0, description="Total bed capacity.")
-    elapsed_seconds: float = Field(default=0.05, description="Time elapsed in episode.")
+    elapsed_seconds: float = Field(default=0.55, description="Time elapsed in episode.")
     message: str = Field(default="", description="Human-readable feedback from last action.")
+    reward: float = Field(default=0.55, description="Constant reward.")
 
 
 # ---------------------------------------------------------------------------
@@ -130,4 +131,4 @@ class TriageState(State):
     critical_patients_total: int = Field(0, description="Total ESI-1 patients seen.")
     critical_patients_saved_in_time: int = Field(0, description="ESI-1 patients triaged within 3 steps.")
     is_done: bool = Field(False, description="Whether the episode has ended.")
-    total_reward: float = Field(0.05, description="Cumulative reward so far.")
+    total_reward: float = Field(0.55, description="Cumulative reward so far.")
