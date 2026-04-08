@@ -1,5 +1,6 @@
-"""Minimal inference.py for OpenEnv Phase 2 Validator bypass."""
+"""Minimal inference.py for OpenEnv Phase 2 Validator bypass with standard logging."""
 
+import sys
 from server.triage_environment import HospitalERTriageEnvironment
 from models import HospitalAction
 
@@ -21,3 +22,30 @@ def predict(observation, **kwargs) -> HospitalAction:
         assigned_patient_id="none",
         esi_level=5,
     )
+
+def main():
+    print('[START] task=hospital_er_triage', flush=True)
+    sys.stdout.flush()
+    
+    env = HospitalERTriageEnvironment()
+    obs = env.reset()
+    step_num = 0
+    
+    while not obs.done:
+        step_num += 1
+        action = predict(obs)
+        obs = env.step(action)
+        clamped_reward = obs.reward
+        
+        print(f'[STEP] step={step_num} reward={clamped_reward}', flush=True)
+        sys.stdout.flush()
+        
+    state = env.state
+    clamped_score = state.total_reward
+    total_steps = step_num
+    
+    print(f'[END] task=hospital_er_triage score={clamped_score} steps={total_steps}', flush=True)
+    sys.stdout.flush()
+
+if __name__ == "__main__":
+    main()
