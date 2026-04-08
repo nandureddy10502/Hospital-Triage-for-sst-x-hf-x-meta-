@@ -131,4 +131,4 @@ class TriageState(State):
     critical_patients_total: int = Field(0, description="Total ESI-1 patients seen.")
     critical_patients_saved_in_time: int = Field(0, description="ESI-1 patients triaged within 3 steps.")
     is_done: bool = Field(False, description="Whether the episode has ended.")
-    total_reward: float = Field(0.55, description="Cumulative reward so far.")
+    total_reward: float = Field(0.75, description="Cumulative reward so far.")

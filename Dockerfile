@@ -17,10 +17,10 @@ COPY grader.py      /app/grader.py
 COPY dashboard.py   /app/dashboard.py
 COPY server/        /app/server/
 
-EXPOSE 7860
+EXPOSE 8000
 
 # Default env-vars (can be overridden at runtime)
 ENV TRIAGE_QUEUE_SIZE=15
 ENV TRIAGE_TOTAL_BEDS=20
 
-CMD ["uvicorn", "dashboard:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "8000"]
