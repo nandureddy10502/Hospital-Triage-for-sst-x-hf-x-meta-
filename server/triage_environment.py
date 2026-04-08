@@ -120,8 +120,6 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
         self._done: bool = True
         self._start_time: float = 0.0
 
-    def _meta_safe(self, v): return float(max(0.01, min(0.99, (v + 100) / 200)))
-
     def reset(
         self,
         seed: Optional[int] = None,
@@ -165,7 +163,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             elapsed_seconds=0.0,
             message="New shift started. Use 'triage' to assign beds, then 'diagnostic' to discharge.",
             done=False,
-            reward=self._meta_safe(0.0),
+            reward=float(max(0.05, min(0.95, 0.5))),
         )
 
     def step(
@@ -182,7 +180,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
                 beds_total=self._total_beds,
                 message="Shift over. Reset to start a new episode.",
                 done=True,
-                reward=self._meta_safe(0.0),
+                reward=float(max(0.05, min(0.95, 0.5))),
             )
 
         self._step_count += 1
@@ -308,7 +306,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             elapsed_seconds=round(elapsed, 2),
             message=" | ".join(messages) if messages else "Step processed.",
             done=is_done,
-            reward=self._meta_safe(step_reward),
+            reward=float(max(0.05, min(0.95, step_reward / 100.0 if abs(step_reward) > 1 else 0.5 if step_reward == 0 else step_reward))),
         )
 
     @property
@@ -328,7 +326,7 @@ class HospitalERTriageEnvironment(Environment[HospitalAction, TriageObservation,
             step_count=self._step_count,
             patients_triaged=self._patients_triaged,
             patients_remaining=len(self._waiting_room),
-            total_reward=self._meta_safe(bounded_score),
+            total_reward=float(max(0.05, min(0.95, bounded_score))),
             is_done=self._done,
             critical_patients_total=self._critical_patients_total,
             critical_patients_saved_in_time=self._critical_patients_saved_in_time,

@@ -26,11 +26,10 @@ def grade_episode(state: Dict[str, Any]) -> float:
     
     # If there were no critical patients generated, it's an automatic pass for this metric
     if total_critical == 0:
-        raw_score = 1.0
+        return 0.95
     else:
         raw_score = float(saved_in_time) / total_critical
-        
-    return float(max(0.05, min(0.95, raw_score)))
+        return float(max(0.05, min(0.95, raw_score)))
 
 if __name__ == "__main__":
     import asyncio
