@@ -31,7 +31,7 @@ def main():
     obs = env.reset()
     step_num = 0
     
-    while not obs.done:
+    while not obs.done and step_num < 10:
         step_num += 1
         action = predict(obs)
         obs = env.step(action)
